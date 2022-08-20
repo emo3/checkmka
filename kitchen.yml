@@ -25,6 +25,10 @@ platforms:
 
 suites:
   - name: default
+    attributes:
+      CMK_IP: <%= ENV['CMK_IP'] %>
+      CMA_IP: <%= ENV['CMA_IP'] %>
+      CMK_TOKEN: <%= ENV['CMK_TOKEN'] %>
     verifier:
       inspec_tests:
         - test/integration/default

@@ -7,6 +7,9 @@ chef_version     '>= 16.0'
 license          'Apache-2.0'
 description      'Installs/Configures checkmk agent'
 version          '1.0.0'
+
 supports 'redhat'
 supports 'centos'
 supports 'almalinux'
+
+depends 'line'
