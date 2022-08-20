@@ -1,4 +1,4 @@
 # checkmka
 
-TODO: Enter the cookbook description here.
+TODO: Install and configure CheckMK Agent
 
