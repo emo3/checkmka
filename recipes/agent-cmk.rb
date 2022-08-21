@@ -4,7 +4,17 @@
 #
 # Copyright:: 2019, Ed Overton, Apache 2.0
 
-package %w(xinetd python3)
+package %w(
+  xinetd
+  python3-chardet
+  python3-charset-normalizer
+  python3-defusedxml
+  python3-idna
+  python3-pygments
+  python3-pysocks
+  python3-requests
+  python3-requests-toolbelt
+  python3-urllib3)
 
 service 'xinetd' do
   supports status: true, restart: true, reload: true
@@ -53,7 +63,7 @@ template '/tmp/add-checkmks.py' do
     agenthostname: node['hostname'],
     agentip: node['cmk']['agent_ip']
   )
-  # notifies :run, 'execute[run_add-checkmks]', :immediately
+  notifies :run, 'execute[run_add-checkmks]', :immediately
 end
 
 execute 'run_add-checkmks' do
@@ -71,7 +81,7 @@ template '/tmp/discover-checkmks.py' do
     apitoken: node['cmk']['api_token'],
     agenthostname: node['hostname']
   )
-  # notifies :run, 'execute[run_discover-checkmks]', :immediately
+  notifies :run, 'execute[run_discover-checkmks]', :immediately
 end
 
 execute 'run_discover-checkmks' do
@@ -89,7 +99,7 @@ template '/tmp/activate-checkmks.py' do
     apitoken: node['cmk']['api_token'],
     sitename: node['cmk']['site_name']
   )
-  # notifies :run, 'execute[run_activate-checkmks]', :immediately
+  notifies :run, 'execute[run_activate-checkmks]', :immediately
 end
 
 execute 'run_activate-checkmks' do
