@@ -4,17 +4,16 @@
 #
 # Copyright:: 2019, Ed Overton, Apache 2.0
 
+log node['cmk']['api_token']
+log node['cmk']['agent_ip']
+log node['cmk']['server_ip']
+
+package 'epel-release'
+
 package %w(
+  httpie
   xinetd
-  python3-chardet
-  python3-charset-normalizer
-  python3-defusedxml
-  python3-idna
-  python3-pygments
-  python3-pysocks
-  python3-requests
-  python3-requests-toolbelt
-  python3-urllib3)
+)
 
 service 'xinetd' do
   supports status: true, restart: true, reload: true
@@ -54,9 +53,9 @@ end
 
 # Create file from template
 template '/tmp/add-checkmks.py' do
-  source 'add-checkmks.erb'
+  source 'add-checkmks1.erb'
   mode '0500'
-  sensitive false
+  sensitive true
   variables(
     cmkserver: node['cmk']['server_name'],
     apitoken: node['cmk']['api_token'],
@@ -68,14 +67,15 @@ end
 
 execute 'run_add-checkmks' do
   command '/tmp/add-checkmks.py'
+  ignore_failure true
   action :nothing
 end
 
 # Create file from template
 template '/tmp/discover-checkmks.py' do
-  source 'discover-checkmks.erb'
+  source 'discover-checkmks1.erb'
   mode '0500'
-  sensitive false
+  sensitive true
   variables(
     cmkserver: node['cmk']['server_name'],
     apitoken: node['cmk']['api_token'],
@@ -86,14 +86,15 @@ end
 
 execute 'run_discover-checkmks' do
   command '/tmp/discover-checkmks.py'
+  ignore_failure true
   action :nothing
 end
 
 # Create file from template
 template '/tmp/activate-checkmks.py' do
-  source 'activate-checkmks.erb'
+  source 'activate-checkmks1.erb'
   mode '0500'
-  sensitive false
+  sensitive true
   variables(
     cmkserver: node['cmk']['server_name'],
     apitoken: node['cmk']['api_token'],
@@ -104,5 +105,6 @@ end
 
 execute 'run_activate-checkmks' do
   command '/tmp/activate-checkmks.py'
+  ignore_failure true
   action :nothing
 end

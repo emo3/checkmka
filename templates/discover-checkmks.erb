@@ -1,31 +1,13 @@
-#!/usr/bin/env python3
-import json
-import pprint
-import urllib.request
+#!/bin/bash
+HOST_NAME="<%= @cmkserver %>"
+SITE_NAME="cmk"
+API_URL="http://$HOST_NAME/$SITE_NAME/check_mk/api/1.0"
+USERNAME="automation"
+PASSWORD="<%= @apitoken %>"
 
-HOST_NAME = "<%= @cmkserver %>"
-SITE_NAME = "cmk"
-API_URL = f"http://{HOST_NAME}/{SITE_NAME}/check_mk/api/1.0"
-USERNAME = "automation"
-PASSWORD = "<%= @apitoken %>"
-
-request = urllib.request.Request(
-  f"{API_URL}/domain-types/service_discovery_run/actions/start/invoke",
-  method="POST",
-  headers={
-    "Authorization": f"Bearer {USERNAME} {PASSWORD}",
-    "Accept": "application/json",
-    "Content-Type": 'application/json',
-  },
-  data=json.dumps({
-    'host_name': '<%= @agenthostname %>',
-    'mode': 'fix_all'
-  }).encode('utf-8'),
-)
-response = urllib.request.urlopen(request)
-if response.status == 200:
-  pprint.pprint(json.loads(response.read()))
-elif response.status == 204:
-  print("Done")
-else:
-  raise RuntimeError(response.read())
+http --verify=no --json POST "$API_URL/domain-types/service_discovery_run/actions/start/invoke" \
+  "Authorization: Bearer $USERNAME $PASSWORD" \
+  "Accept: application/json" \
+  'Content-Type:application/json' \
+  host_name='<%= @agenthostname %>' \
+  mode='fix_all'
