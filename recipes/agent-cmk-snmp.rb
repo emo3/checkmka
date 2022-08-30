@@ -36,8 +36,34 @@ execute 'run_add-checkmks-snmp' do
 end
 
 # Create file from template
-template '/tmp/discover-checkmks.py' do
+template '/tmp/discover-checkmks.sh' do
+  source 'discover-checkmks.erb'
+  mode '0500'
+  sensitive false
+  variables(
+    cmkserver: node['cmk']['server_name'],
+    apitoken: node['cmk']['api_token'],
+    agenthostname: node['hostname']
+  )
+  # notifies :run, 'execute[run_discover-checkmks]', :immediately
+end
+
+# Create file from template
+template '/tmp/discover-checkmks1.py' do
   source 'discover-checkmks1.erb'
+  mode '0500'
+  sensitive false
+  variables(
+    cmkserver: node['cmk']['server_name'],
+    apitoken: node['cmk']['api_token'],
+    agenthostname: node['hostname']
+  )
+  # notifies :run, 'execute[run_discover-checkmks]', :immediately
+end
+
+# Create file from template
+template '/tmp/discover-checkmks2.py' do
+  source 'discover-checkmks2.erb'
   mode '0500'
   sensitive false
   variables(
