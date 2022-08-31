@@ -4,10 +4,6 @@
 #
 # Copyright:: 2019, Ed Overton, Apache 2.0
 
-log node['cmk']['api_token']
-log node['cmk']['agent_ip']
-log node['cmk']['server_ip']
-
 package 'epel-release'
 
 package %w(
