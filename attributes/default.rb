@@ -1,4 +1,4 @@
-default['cmk']['cmk_release'] = '2.1.0p9'
+default['cmk']['cmk_release'] = '2.0.0p27'
 default['cmk']['media_url'] = "https://download.checkmk.com/checkmk/#{node['cmk']['cmk_release']}"
 default['cmk']['agent_rpm'] = "check-mk-agent-#{node['cmk']['cmk_release']}-1.noarch.rpm"
 default['cmk']['site_name'] = 'cmk'
