@@ -6,31 +6,29 @@
 
 package 'epel-release'
 
-package %w(
-  httpie
-  xinetd
-)
+package %w(httpie)
+# package %w(httpie xinetd)
 
-service 'xinetd' do
-  supports status: true, restart: true, reload: true
-  action [ :enable, :start ]
-end
+# service 'xinetd' do
+#   supports status: true, restart: true, reload: true
+#   action [ :enable, :start ]
+# end
 
-append_if_no_line 'hosts_allow' do
-  path '/etc/hosts.allow'
-  line "check_mk_agent : #{node['cmk']['server_ip']}"
-  notifies :reload, 'service[xinetd]', :immediately
-end
+# append_if_no_line 'hosts_allow' do
+#   path '/etc/hosts.allow'
+#   line "check_mk_agent : #{node['cmk']['server_ip']}"
+#   notifies :reload, 'service[xinetd]', :immediately
+# end
 
-template '/etc/xinetd.d/check_mk' do
-  source 'check-mk-agent'
-  variables(
-    ip_mk_server: node['cmk']['server_ip']
-  )
-  mode '0644'
-  action :create
-  notifies :reload, 'service[xinetd]', :immediately
-end
+# template '/etc/xinetd.d/check_mk' do
+#   source 'check-mk-agent'
+#   variables(
+#     ip_mk_server: node['cmk']['server_ip']
+#   )
+#   mode '0644'
+#   action :create
+#   notifies :reload, 'service[xinetd]', :immediately
+# end
 
 append_if_no_line node['cmk']['server_name'] do
   path '/etc/hosts'
