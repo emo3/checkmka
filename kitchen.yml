@@ -21,6 +21,7 @@ verifier:
 
 platforms:
   - name: bento/almalinux-8
+  - name: bento/centos-7
 
 suites:
   - name: default

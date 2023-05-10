@@ -1,0 +1,9 @@
+#!/bin/bash
+
+/usr/bin/cmk-agent-ctl register \
+  --hostname <%= @host_name %> \
+  --server <%= @cmkserver %>:8080 \
+  --site <%= @cmksite %> \
+  --trust-cert \
+  --user automation \
+  --password '<%= @apitoken %>'
