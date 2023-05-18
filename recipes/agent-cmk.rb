@@ -4,103 +4,91 @@
 #
 # Copyright:: 2019, Ed Overton, Apache 2.0
 
-package 'epel-release'
-
-package %w(
-  httpie
-  xinetd
-)
-
-service 'xinetd' do
-  supports status: true, restart: true, reload: true
-  action [ :enable, :start ]
-end
-
-append_if_no_line 'hosts_allow' do
-  path '/etc/hosts.allow'
-  line "check_mk_agent : #{node['cmk']['server_ip']}"
-  notifies :reload, 'service[xinetd]', :immediately
-end
-
-template '/etc/xinetd.d/check_mk' do
-  source 'check-mk-agent'
-  variables(
-    ip_mk_server: node['cmk']['server_ip']
-  )
-  mode '0644'
-  action :create
-  notifies :reload, 'service[xinetd]', :immediately
-end
-
-append_if_no_line node['cmk']['server_name'] do
+append_if_no_line node['cmka']['server_name'] do
   path '/etc/hosts'
-  line "#{node['cmk']['server_ip']} #{node['cmk']['server_name']}"
+  line "#{node['cmka']['server_ip']} #{node['cmka']['server_name']}"
 end
 
-remote_file "#{Chef::Config[:file_cache_path]}/#{node['cmk']['agent_rpm']}" do
-  source "http://#{node['cmk']['server_name']}/#{node['cmk']['site_name']}/check_mk/agents/#{node['cmk']['agent_rpm']}"
+remote_file "#{Chef::Config[:file_cache_path]}/#{node['cmka']['agent_rpm']}" do
+  source "http://#{node['cmka']['server_name']}:8080/#{node['cmka']['site_name']}/check_mk/agents/#{node['cmka']['agent_rpm']}"
   action :create
 end
 
 package 'agent-rpm' do
-  source "#{Chef::Config[:file_cache_path]}/#{node['cmk']['agent_rpm']}"
+  source "#{Chef::Config[:file_cache_path]}/#{node['cmka']['agent_rpm']}"
   action :install
 end
 
-# Create file from template
-template '/tmp/add-checkmks.py' do
-  source 'add-checkmks1.erb'
-  mode '0500'
-  sensitive true
+package %w(python3 python3-requests python3-urllib3 jq)
+
+# Create host - requests
+template '/usr/local/bin/add-checkmks.py' do
+  source 'add-checkmks.py.erb'
+  mode '0755'
   variables(
-    cmkserver: node['cmk']['server_name'],
-    apitoken: node['cmk']['api_token'],
-    agenthostname: node['hostname'],
-    agentip: node['cmk']['agent_ip']
+    cmkserver: node['cmka']['server_name'],
+    apitoken: node['cmka']['secret'],
+    host_ip: node['cmka']['host_ip'],
+    host_name: node['fqdn']
   )
-  notifies :run, 'execute[run_add-checkmks]', :immediately
+  sensitive true
+end
+
+# Discover host - curl
+template '/usr/local/bin/discover-checkmks.sh' do
+  source 'discover-checkmks.sh.erb'
+  mode '0755'
+  variables(
+    cmkserver: node['cmka']['server_name'],
+    apitoken: node['cmka']['secret'],
+    host_name: node['fqdn']
+  )
+  sensitive true
+end
+
+# Activate changes - curl
+template '/usr/local/bin/activate-checkmks.sh' do
+  source 'activate-checkmks.sh.erb'
+  mode '0755'
+  variables(
+    cmkserver: node['cmka']['server_name'],
+    apitoken: node['cmka']['secret']
+  )
+  sensitive true
+end
+
+template '/usr/local/bin/register-checkmks.sh' do
+  source 'register-checkmks.sh.erb'
+  mode '0755'
+  variables(
+    cmkserver: node['cmka']['server_name'],
+    cmksite: node['cmka']['site_name'],
+    apitoken: node['cmka']['secret'],
+    host_name: node['fqdn']
+  )
+  sensitive true
 end
 
 execute 'run_add-checkmks' do
-  command '/tmp/add-checkmks.py'
+  command '/usr/local/bin/add-checkmks.py'
   ignore_failure true
   action :nothing
-end
-
-# Create file from template
-template '/tmp/discover-checkmks.py' do
-  source 'discover-checkmks1.erb'
-  mode '0500'
-  sensitive true
-  variables(
-    cmkserver: node['cmk']['server_name'],
-    apitoken: node['cmk']['api_token'],
-    agenthostname: node['hostname']
-  )
-  notifies :run, 'execute[run_discover-checkmks]', :immediately
 end
 
 execute 'run_discover-checkmks' do
-  command '/tmp/discover-checkmks.py'
+  command '/usr/local/bin/discover-checkmks.py'
   ignore_failure true
   action :nothing
 end
 
-# Create file from template
-template '/tmp/activate-checkmks.py' do
-  source 'activate-checkmks1.erb'
-  mode '0500'
-  sensitive true
-  variables(
-    cmkserver: node['cmk']['server_name'],
-    apitoken: node['cmk']['api_token'],
-    sitename: node['cmk']['site_name']
-  )
-  notifies :run, 'execute[run_activate-checkmks]', :immediately
+execute 'run_activate-checkmks' do
+  command '/usr/local/bin/activate-checkmks.py'
+  ignore_failure true
+  action :nothing
 end
 
-execute 'run_activate-checkmks' do
-  command '/tmp/activate-checkmks.py'
+execute 'run_register-checkmks' do
+  command '/usr/local/bin/register-checkmks.sh'
   ignore_failure true
   action :nothing
 end

@@ -10,7 +10,8 @@ name 'checkmka'
 default_source :supermarket
 
 # run_list: chef-client will run these recipes in the order specified.
-run_list 'checkmka::agent-cmk-snmp'
+run_list 'checkmka::agent-cmk'
 
 # Specify a custom source for a single cookbook:
 cookbook 'checkmka', path: '.'
+override['cmk']['cmk_release'] = '2.1.0p18'
