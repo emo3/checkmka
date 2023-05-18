@@ -21,12 +21,11 @@ verifier:
 
 platforms:
   - name: bento/almalinux-8
-  - name: bento/centos-7
 
 suites:
   - name: default
     attributes:
-      cmk:
+      cmka:
         api_token: '<%= ENV['CMK_TOKEN'] %>'
         agent_ip: '<%= ENV['CMA_IP'] %>'
         server_ip: '<%= ENV['CMK_IP'] %>'

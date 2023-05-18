@@ -14,4 +14,5 @@ run_list 'checkmka::agent-cmk'
 
 # Specify a custom source for a single cookbook:
 cookbook 'checkmka', path: '.'
-override['cmk']['cmk_release'] = '2.1.0p18'
+## Uncomment and change when you have another version
+# override['cmk']['cmk_release'] = '2.1.0p26'

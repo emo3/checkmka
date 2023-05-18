@@ -2,12 +2,12 @@
 import pprint
 import requests
 
-HOST_NAME="<%= @cmkserver %>"
-SITE_NAME = "cmk"
-API_URL = f"http://{HOST_NAME}:8080/{SITE_NAME}/check_mk/api/1.0"
+HOST_NAME = "<%= @cmkserver %>"
+SITE_NAME = "<%= @cmksite %>"
+API_URL = f"http://{HOST_NAME}:<%= @cmkport %>/{SITE_NAME}/check_mk/api/1.0"
 
 USERNAME = "automation"
-PASSWORD="<%= @apitoken %>"
+PASSWORD = "<%= @apitoken %>"
 
 session = requests.session()
 session.headers['Authorization'] = f"Bearer {USERNAME} {PASSWORD}"

@@ -1,9 +1,13 @@
 #!/bin/bash
-
-/usr/bin/cmk-agent-ctl register \
+if (( $EUID != 0 )); then
+    echo "Please run as root"
+    exit
+else
+  /usr/bin/cmk-agent-ctl register \
   --hostname <%= @host_name %> \
-  --server <%= @cmkserver %>:8080 \
+  --server <%= @cmkserver %>:<%= @cmkregister %> \
   --site <%= @cmksite %> \
   --trust-cert \
   --user automation \
   --password '<%= @apitoken %>'
+fi

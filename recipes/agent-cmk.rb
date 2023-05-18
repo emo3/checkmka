@@ -27,6 +27,8 @@ template '/usr/local/bin/add-checkmks.py' do
   mode '0755'
   variables(
     cmkserver: node['cmka']['server_name'],
+    cmksite: node['cmka']['site_name'],
+    cmkport: node['cmka']['server_port'],
     apitoken: node['cmka']['secret'],
     host_ip: node['cmka']['host_ip'],
     host_name: node['fqdn']
@@ -40,6 +42,8 @@ template '/usr/local/bin/discover-checkmks.sh' do
   mode '0755'
   variables(
     cmkserver: node['cmka']['server_name'],
+    cmksite: node['cmka']['site_name'],
+    cmkport: node['cmka']['server_port'],
     apitoken: node['cmka']['secret'],
     host_name: node['fqdn']
   )
@@ -52,6 +56,8 @@ template '/usr/local/bin/activate-checkmks.sh' do
   mode '0755'
   variables(
     cmkserver: node['cmka']['server_name'],
+    cmksite: node['cmka']['site_name'],
+    cmkport: node['cmka']['server_port'],
     apitoken: node['cmka']['secret']
   )
   sensitive true
@@ -63,6 +69,7 @@ template '/usr/local/bin/register-checkmks.sh' do
   variables(
     cmkserver: node['cmka']['server_name'],
     cmksite: node['cmka']['site_name'],
+    cmkregister: node['cmka']['register_port'],
     apitoken: node['cmka']['secret'],
     host_name: node['fqdn']
   )

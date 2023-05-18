@@ -1,8 +1,8 @@
 #!/bin/bash
 
 HOST_NAME="<%= @cmkserver %>"
-SITE_NAME="cmk"
-API_URL="http://$HOST_NAME:8080/$SITE_NAME/check_mk/api/1.0"
+SITE_NAME="<%= @cmksite %>"
+API_URL="http://$HOST_NAME:<%= @cmkport %>/$SITE_NAME/check_mk/api/1.0"
 
 USERNAME="automation"
 PASSWORD="<%= @apitoken %>"
@@ -18,7 +18,7 @@ out=$(
           "force_foreign_changes": true,
           "redirect": false,
           "sites": [
-            "cmk"
+            "<%= @cmksite %>"
           ]
         }' \
     "$API_URL/domain-types/activation_run/actions/activate-changes/invoke")
